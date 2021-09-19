@@ -1,11 +1,10 @@
-package model
+package models
 
 import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
@@ -24,7 +23,7 @@ func (t Role) Value() (driver.Value, error) {
 	case Tenant, Guest: //valid case
 		return string(t), nil
 	}
-	return nil, errors.New("Invalid product type value") //else is invalid
+	return nil, errors.New("Invalid role type value") //else is invalid
 }
 
 //Scan validate enum on read from data base
@@ -36,7 +35,7 @@ func (t *Role) Scan(value interface{}) error {
 	}
 	st, ok := value.(string) // if we declare db type as ENUM gorm will scan value as []uint8
 	if !ok {
-		return errors.New("invalid data for product type")
+		return errors.New("invalid data for role type")
 	}
 	pt = Role(st) //convert type from string to ProductType
 	switch pt {
@@ -44,7 +43,7 @@ func (t *Role) Scan(value interface{}) error {
 		*t = pt
 		return nil
 	}
-	return fmt.Errorf("invalid product type value :%s", st) //else is invalid
+	return fmt.Errorf("invalid role type value :%s", st) //else is invalid
 }
 
 //User represents users table in database
@@ -56,9 +55,8 @@ type User struct {
 	Username    string    `gorm:"uniqueIndex;type:varchar(255)"`
 	Email       string    `gorm:"uniqueIndex;type:varchar(255)"`
 	Password    string    `gorm:"->;<-;not null" `
-	Phone       string    `gorm:"uniqueIndex;type:varchar(255)" `
+	Phone       string    `gorm:"type:varchar(255)" `
 	Photo       string    `gorm:"type:varchar(255)"`
 	Role        Role      `sql:"type:user_access"`
 	Status      int       `gorm:"default:0;size:10"`
-	DateOfBirth datatypes.Date
 }

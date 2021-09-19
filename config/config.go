@@ -2,7 +2,7 @@ package config
 
 import (
 	"fmt"
-	"github.com/avtara/travair-api/model"
+	"github.com/avtara/travair-api/models"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -25,7 +25,6 @@ func InitDB() {
 	dbPort := os.Getenv("DB_PORT")
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Jakarta", dbHost, dbUser, dbPass, dbName, dbPort)
-	fmt.Println(dsn)
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err.Error())
@@ -34,5 +33,5 @@ func InitDB() {
 }
 
 func initMigrate() {
-	DB.AutoMigrate(&model.User{})
+	DB.AutoMigrate(&models.User{})
 }

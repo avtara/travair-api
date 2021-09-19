@@ -17,7 +17,7 @@ func RegistrationUserController(c echo.Context) (err error) {
 	}
 	res, e := database.InsertUser(RegistrationUserRequestToModelUser(u))
 	if e != nil {
-		return c.JSON(http.StatusBadRequest, utils.BuildErrorResponse("Conflict", e.Error(), utils.EmptyObj{}))
+		return c.JSON(http.StatusBadRequest, utils.BuildErrorResponse("The data entered already exists", e.Error(), utils.EmptyObj{}))
 	}
-	return c.JSON(http.StatusCreated, utils.BuildResponse(true,"successfully created an account, please check your email to activate!",ModelUserToRegistrationUserResponse(res)))
+	return c.JSON(http.StatusCreated, utils.BuildResponse(true,"Successfully created an account, please check your email to activate!",ModelUserToRegistrationUserResponse(res)))
 }

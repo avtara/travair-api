@@ -8,7 +8,6 @@ import (
 func New() *echo.Echo {
 	e := echo.New()
 
-	e.GET("/users", controller.GetUserController)
-	e.POST("/users", controller.CreateUserController)
+	e.POST("/users", controller.RegistrationUserController)
 	return e
 }

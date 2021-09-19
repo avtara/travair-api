@@ -7,6 +7,7 @@ import (
 	"github.com/avtara/travair-api/models"
 	"github.com/avtara/travair-api/utils"
 	"github.com/jackc/pgconn"
+	"strings"
 )
 
 func InsertUser(user *models.User) (*models.User, error) {
@@ -21,10 +22,10 @@ func InsertUser(user *models.User) (*models.User, error) {
 			switch pgError.Code {
 			case "23505":
 				columnName, _ := utils.GetDetailColumnSQL(pgError.Detail)
-				return nil, errors.New(fmt.Sprintf("That %s is already in use!", columnName))
+				return nil, errors.New(fmt.Sprintf("This %s is already in use!", strings.Title(columnName)))
 			}
 
-			return nil, errors.New(pgError.Code)
+			return nil, errors.New(pgError.Message)
 		}
 	}
 	return user, nil
