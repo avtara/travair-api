@@ -23,7 +23,7 @@ func (t Role) Value() (driver.Value, error) {
 	case Tenant, Guest: //valid case
 		return string(t), nil
 	}
-	return nil, errors.New("Invalid role type value") //else is invalid
+	return nil, errors.New("invalid role type value") //else is invalid
 }
 
 //Scan validate enum on read from data base
