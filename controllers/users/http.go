@@ -3,7 +3,6 @@ package users
 import (
 	"github.com/avtara/travair-api/businesses/users"
 	"github.com/avtara/travair-api/controllers/users/request"
-	"github.com/avtara/travair-api/controllers/users/response"
 	"github.com/avtara/travair-api/helpers"
 	echo "github.com/labstack/echo/v4"
 	"github.com/streadway/amqp"
@@ -26,16 +25,16 @@ func (ctrl *UserController) Registration(c echo.Context) error {
 	ctx := c.Request().Context()
 	req := new(request.UserRegistration)
 	if err := c.Bind(req); err != nil {
-		return helpers.BuildErrorResponse(c, http.StatusBadRequest, err)
+		return c.JSON(http.StatusInternalServerError, helpers.BuildErrorResponse("Internal Server Error", err.Error(), helpers.EmptyObj{}))
 	}
 	if err := c.Validate(req); err != nil {
-		return helpers.BuildErrorValidatorResponse(c, err)
+		c.JSON(http.StatusBadRequest, helpers.BuildErrorResponse("An error occurred while validating the request data", err.Error(), helpers.EmptyObj{}))
 	}
 
 	res,err := ctrl.userService.Registration(ctx, req.ToDomain())
 	if err != nil {
-		return helpers.BuildErrorResponse(c, http.StatusInternalServerError, err)
+		return c.JSON(http.StatusInternalServerError, helpers.BuildErrorResponse("Internal Server Error", err.Error(), helpers.EmptyObj{}))
 	}
 
-	return helpers.BuildResponse(c, response.FromDomain(res))
+	return c.JSON(http.StatusCreated, helpers.BuildErrorResponse("Successfully created an account, please check your email to activate!", err.Error(), res))
 }

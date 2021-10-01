@@ -1,7 +1,7 @@
 package main
 
 import (
-	config2 "github.com/avtara/travair-api/app/config"
+	"github.com/avtara/travair-api/app/config"
 	_middleware "github.com/avtara/travair-api/app/middleware"
 	"github.com/avtara/travair-api/app/routes"
 	"github.com/avtara/travair-api/businesses/users"
@@ -20,8 +20,8 @@ import (
 
 func main() {
 	var (
-		db   = config2.SetupDatabaseConnection()
-		ampq = config2.SetupAMPQConnection()
+		db   = config.SetupDatabaseConnection()
+		ampq = config.SetupAMPQConnection()
 	)
 	timeoutDur, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
 	timeoutContext := time.Duration(timeoutDur) * time.Second

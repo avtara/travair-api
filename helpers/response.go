@@ -3,42 +3,28 @@ package helpers
 import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
-	"github.com/labstack/echo/v4"
-	"net/http"
+	"strings"
 )
 
-type Base struct {
-	Status  int         `json:"status"`
+type Response struct {
+	Status  bool        `json:"status"`
 	Message string      `json:"message"`
-	Errors  []string    `json:"errors,omitempty"`
+	Errors  interface{} `json:"errors,omitempty"`
 	Data    interface{} `json:"data"`
 }
 
 type EmptyObj struct{}
 
-func BuildResponse(c echo.Context, data interface{}) error {
-	res := Base{
-		Status:  http.StatusOK,
-		Message: "Success",
-		Errors:  nil,
+func BuildResponse(message string, data interface{}) Response {
+	res := Response{
+		Status:  true,
+		Message: message,
 		Data:    data,
 	}
-
-	return c.JSON(res.Status, res)
+	return res
 }
 
-func BuildErrorResponse(c echo.Context, status int, err error) error {
-	res := Base{
-		Status:  status,
-		Message: "Something not right",
-		Errors:  []string{err.Error()},
-		Data:    nil,
-	}
-
-	return c.JSON(status, res)
-}
-
-func BuildErrorValidatorResponse(c echo.Context, err error) error {
+func BuildValidatorErrorResponse(message string, err error, data interface{}) Response {
 	var errs []string
 	if castedObject, ok := err.(validator.ValidationErrors); ok {
 		for _, err := range castedObject {
@@ -47,30 +33,40 @@ func BuildErrorValidatorResponse(c echo.Context, err error) error {
 				errs = append(errs,fmt.Sprintf("%s is required",
 					err.Field()))
 			case "email":
-				errs = append(errs,fmt.Sprintf("%s is not valid",
+				errs = append(errs,fmt.Sprintf("%s is required",
 					err.Field()))
 			case "gte":
-				errs = append(errs,fmt.Sprintf("%s is less than %s",
-					err.Field(), err.Param()))
+				errs = append(errs,fmt.Sprintf("%s is required",
+					err.Field()))
 			case "lte":
-				errs = append(errs,fmt.Sprintf("%s is greater than %s",
-					err.Field(), err.Param()))
+				errs = append(errs,fmt.Sprintf("%s is required",
+					err.Field()))
 			case "password":
 				errs = append(errs,fmt.Sprintf("%s is not strong enough",
 					err.Field()))
 			case "role":
-				errs = append(errs,fmt.Sprintf("%s is not valid",
+				errs = append(errs,fmt.Sprintf("%s is required",
 					err.Field()))
 			}
+
 		}
 	}
-
-	res := Base{
-		Status:  http.StatusBadRequest,
-		Message: "Something not right",
+	res := Response{
+		Status:  false,
+		Message: message,
 		Errors:  errs,
-		Data:    nil,
+		Data:    data,
 	}
+	return res
+}
 
-	return c.JSON(res.Status, res)
+func BuildErrorResponse(message string, err string, data interface{}) Response {
+	splitError := strings.Split(err, "\n")
+	res := Response{
+		Status:  false,
+		Message: message,
+		Errors:  splitError,
+		Data:    data,
+	}
+	return res
 }
