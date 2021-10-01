@@ -26,8 +26,8 @@ func main() {
 		ampq = config.SetupAMPQConnection()
 		rdb  = config.SetupRedisConnection()
 	)
-	timeoutDur, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
-	timeoutContext := time.Duration(timeoutDur) * time.Second
+	timeoutDur, _ := strconv.Atoi(os.Getenv("TIMEOUT_IN_MS"))
+	timeoutContext := time.Duration(timeoutDur) * time.Millisecond
 
 	e := echo.New()
 	e.Validator = &helpers.CustomValidator{Validator: validator.New()}

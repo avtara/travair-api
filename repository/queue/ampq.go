@@ -45,6 +45,5 @@ func (rq *repoQueue) Publish(name string,raw interface{}) error {
 		return err
 	}
 
-	defer rq.publishQueue.Close()
 	return nil
 }

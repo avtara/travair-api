@@ -48,14 +48,10 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 
 	res, err := us.userRepository.StoreNewUsers(ctx, userDomain)
 	if err != nil {
-		return nil, err
-	}
-
-	token, err := helpers.RandomToken(15)
-	fmt.Println(err)
-	if err != nil {
 		return nil, businesses.ErrInternalServer
 	}
+
+	token:= helpers.RandomToken(15)
 
 	keyRedis := fmt.Sprintf("confirm_email:%s",res.Email)
 	_, err = us.cacheRepo.Set(ctx, keyRedis, token, time.Duration(60 * 5))
@@ -64,7 +60,7 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 	}
 	err = us.queueRepo.Publish("email:registration", res)
 	if err != nil {
-		return nil, err
+		return nil, businesses.ErrInternalServer
 	}
 	return res, nil
 }

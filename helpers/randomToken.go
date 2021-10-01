@@ -1,14 +1,10 @@
 package helpers
 
 import (
-	"crypto/rand"
-	"encoding/hex"
+	"github.com/labstack/gommon/random"
 )
 
-func RandomToken(n int) (string, error) {
-	bytes := make([]byte, n)
-	if _, err := rand.Read(bytes); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(bytes), nil
+func RandomToken(n int) (string) {
+	data := random.String(uint8(n))
+	return data
 }
