@@ -7,8 +7,7 @@ import (
 	"github.com/avtara/travair-api/businesses/users"
 	_usersController "github.com/avtara/travair-api/controllers/users"
 	"github.com/avtara/travair-api/helpers"
-	"github.com/avtara/travair-api/repository/databases/cache"
-
+	"github.com/avtara/travair-api/repository/cache"
 	//"github.com/avtara/travair-api/repository/databases/cache"
 	_usersRepo "github.com/avtara/travair-api/repository/databases/users"
 	"github.com/avtara/travair-api/repository/queue"
