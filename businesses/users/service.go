@@ -2,7 +2,9 @@ package users
 
 import (
 	"context"
+	"fmt"
 	"github.com/avtara/travair-api/businesses"
+	"github.com/avtara/travair-api/businesses/cache"
 	"github.com/avtara/travair-api/businesses/queue"
 	"github.com/avtara/travair-api/helpers"
 	"strings"
@@ -13,18 +15,20 @@ type userService struct {
 	userRepository Repository
 	contextTimeout time.Duration
 	queueRepo queue.Repository
+	cacheRepo cache.Repository
 }
 
-func NewUserService(rep Repository, timeout time.Duration, queueRep queue.Repository) Service {
+func NewUserService(rep Repository, timeout time.Duration, queueRep queue.Repository, cacheRep cache.Repository) Service {
 	return &userService{
 		userRepository: rep,
 		contextTimeout: timeout,
 		queueRepo: queueRep,
+		cacheRepo: cacheRep,
 	}
 }
 
 func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*Domain, error) {
-	ctx, cancel := context.WithTimeout(ctx, us.contextTimeout)
+	_, cancel := context.WithTimeout(ctx, us.contextTimeout)
 	defer cancel()
 
 	existedUser, err := us.userRepository.GetByEmail(ctx, userDomain)
@@ -47,8 +51,18 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 		return nil, err
 	}
 
+	token, err := helpers.RandomToken(15)
+	fmt.Println(err)
+	if err != nil {
+		return nil, businesses.ErrInternalServer
+	}
 
-	us.queueRepo.Publish("email:registration", res)
+	keyRedis := fmt.Sprintf("confirm_email:%s",res.Email)
+	_, err = us.cacheRepo.Set(ctx, keyRedis, token, time.Duration(60 * 5))
+	if err != nil {
+		return nil, businesses.ErrInternalServer
+	}
+	err = us.queueRepo.Publish("email:registration", res)
 	if err != nil {
 		return nil, err
 	}

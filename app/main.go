@@ -7,8 +7,11 @@ import (
 	"github.com/avtara/travair-api/businesses/users"
 	_usersController "github.com/avtara/travair-api/controllers/users"
 	"github.com/avtara/travair-api/helpers"
+	"github.com/avtara/travair-api/repository/databases/cache"
+
+	//"github.com/avtara/travair-api/repository/databases/cache"
 	_usersRepo "github.com/avtara/travair-api/repository/databases/users"
-	"github.com/avtara/travair-api/repository/queue/broker"
+	"github.com/avtara/travair-api/repository/queue"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -22,6 +25,7 @@ func main() {
 	var (
 		db   = config.SetupDatabaseConnection()
 		ampq = config.SetupAMPQConnection()
+		rdb  = config.SetupRedisConnection()
 	)
 	timeoutDur, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
 	timeoutContext := time.Duration(timeoutDur) * time.Second
@@ -31,11 +35,12 @@ func main() {
 	e.Use(middleware.CORS())
 	e.Use(middleware.LoggerWithConfig(_middleware.LoggerConfig()))
 
+	queueRepo := queue.NewRepoAMPQ(ampq)
 
-	queueRepo := broker.NewRepoAMPQ(ampq)
+	cacheRepo := cache.NewRepoCache(rdb)
 
 	userRepo := _usersRepo.NewRepoMySQL(db)
-	userService := users.NewUserService(userRepo, timeoutContext, queueRepo)
+	userService := users.NewUserService(userRepo, timeoutContext, queueRepo, cacheRepo)
 	userCtrl := _usersController.NewUserController(userService, ampq)
 
 	routesInit := routes.ControllerList{

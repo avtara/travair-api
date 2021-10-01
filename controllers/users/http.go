@@ -3,6 +3,7 @@ package users
 import (
 	"github.com/avtara/travair-api/businesses/users"
 	"github.com/avtara/travair-api/controllers/users/request"
+	"github.com/avtara/travair-api/controllers/users/response"
 	"github.com/avtara/travair-api/helpers"
 	echo "github.com/labstack/echo/v4"
 	"github.com/streadway/amqp"
@@ -35,6 +36,5 @@ func (ctrl *UserController) Registration(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, helpers.BuildErrorResponse("Internal Server Error", err.Error(), helpers.EmptyObj{}))
 	}
-
-	return c.JSON(http.StatusCreated, helpers.BuildErrorResponse("Successfully created an account, please check your email to activate!", err.Error(), res))
+	return c.JSON(http.StatusCreated, helpers.BuildResponse("Successfully created an account, please check your email to activate!", response.FromDomain(res)))
 }

@@ -1,4 +1,4 @@
-package broker
+package queue
 
 import (
 	"encoding/json"
@@ -44,5 +44,7 @@ func (rq *repoQueue) Publish(name string,raw interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	defer rq.publishQueue.Close()
 	return nil
 }
