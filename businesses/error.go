@@ -4,5 +4,5 @@ import "errors"
 
 var (
 	ErrInternalServer = errors.New("something gone wrong, contact administrator")
-	ErrDuplicateData = errors.New("duplicate data")
+	ErrEmailDuplicate = errors.New("email is already taken")
 )
