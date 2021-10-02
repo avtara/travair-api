@@ -1,7 +1,7 @@
 package helpers
 
 import (
-"golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func HashPassword(password string) (string, error) {
