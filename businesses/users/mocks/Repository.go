@@ -14,13 +14,13 @@ type Repository struct {
 	mock.Mock
 }
 
-// GetByEmail provides a mock function with given fields: ctx, data
-func (_m *Repository) GetByEmail(ctx context.Context, data *users.Domain) (*users.Domain, error) {
-	ret := _m.Called(ctx, data)
+// GetByEmail provides a mock function with given fields: ctx, email
+func (_m *Repository) GetByEmail(ctx context.Context, email string) (*users.Domain, error) {
+	ret := _m.Called(ctx, email)
 
 	var r0 *users.Domain
-	if rf, ok := ret.Get(0).(func(context.Context, *users.Domain) *users.Domain); ok {
-		r0 = rf(ctx, data)
+	if rf, ok := ret.Get(0).(func(context.Context, string) *users.Domain); ok {
+		r0 = rf(ctx, email)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*users.Domain)
@@ -28,8 +28,8 @@ func (_m *Repository) GetByEmail(ctx context.Context, data *users.Domain) (*user
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, *users.Domain) error); ok {
-		r1 = rf(ctx, data)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, email)
 	} else {
 		r1 = ret.Error(1)
 	}
