@@ -38,7 +38,7 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 		}
 	}
 	if existedUser != nil {
-		return nil, businesses.ErrDuplicateData
+		return nil, businesses.ErrEmailDuplicate
 	}
 
 	userDomain.Password, err = helpers.HashPassword(userDomain.Password)
