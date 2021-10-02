@@ -24,44 +24,29 @@ func BuildResponse(message string, data interface{}) Response {
 	return res
 }
 
-func BuildValidatorErrorResponse(message string, err error, data interface{}) Response {
-	var errs []string
+func BuildErrorResponse(message string, err error, data interface{}) Response {
+	errorMessage := err.Error()
 	if castedObject, ok := err.(validator.ValidationErrors); ok {
 		for _, err := range castedObject {
 			switch err.Tag() {
 			case "required":
-				errs = append(errs,fmt.Sprintf("%s is required",
-					err.Field()))
+				errorMessage = fmt.Sprintf("%s is required", err.Field())
 			case "email":
-				errs = append(errs,fmt.Sprintf("%s is required",
-					err.Field()))
+				errorMessage = fmt.Sprintf("%s is required", err.Field())
 			case "gte":
-				errs = append(errs,fmt.Sprintf("%s is required",
-					err.Field()))
+				errorMessage = fmt.Sprintf("%s is required", err.Field())
 			case "lte":
-				errs = append(errs,fmt.Sprintf("%s is required",
-					err.Field()))
+				errorMessage = fmt.Sprintf("%s is required", err.Field())
 			case "password":
-				errs = append(errs,fmt.Sprintf("%s is not strong enough",
-					err.Field()))
+				errorMessage = fmt.Sprintf("%s is not strong enough", err.Field())
 			case "role":
-				errs = append(errs,fmt.Sprintf("%s is required",
-					err.Field()))
+				errorMessage = fmt.Sprintf("%s is not valid role", err.Field())
 			}
-
+			break
 		}
 	}
-	res := Response{
-		Status:  false,
-		Message: message,
-		Errors:  errs,
-		Data:    data,
-	}
-	return res
-}
 
-func BuildErrorResponse(message string, err string, data interface{}) Response {
-	splitError := strings.Split(err, "\n")
+	splitError := strings.Split(errorMessage, "\n")
 	res := Response{
 		Status:  false,
 		Message: message,

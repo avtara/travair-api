@@ -26,15 +26,23 @@ func (ctrl *UserController) Registration(c echo.Context) error {
 	ctx := c.Request().Context()
 	req := new(request.UserRegistration)
 	if err := c.Bind(req); err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.BuildErrorResponse("Internal Server Error", err.Error(), helpers.EmptyObj{}))
+		return c.JSON(http.StatusInternalServerError,
+			helpers.BuildErrorResponse("Internal Server Error",
+				err, helpers.EmptyObj{}))
 	}
 	if err := c.Validate(req); err != nil {
-		return c.JSON(http.StatusBadRequest, helpers.BuildErrorResponse("An error occurred while validating the request data", err.Error(), helpers.EmptyObj{}))
+		return c.JSON(http.StatusBadRequest,
+			helpers.BuildErrorResponse("An error occurred while validating the request data",
+				err, helpers.EmptyObj{}))
 	}
 
 	res,err := ctrl.userService.Registration(ctx, req.ToDomain())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, helpers.BuildErrorResponse("Internal Server Error", err.Error(), helpers.EmptyObj{}))
+		return c.JSON(http.StatusInternalServerError,
+			helpers.BuildErrorResponse("Internal Server Error",
+				err, helpers.EmptyObj{}))
 	}
-	return c.JSON(http.StatusCreated, helpers.BuildResponse("Successfully created an account, please check your email to activate!", response.FromDomain(res)))
+	return c.JSON(http.StatusCreated,
+		helpers.BuildResponse("Successfully created an account, please check your email to activate!",
+			response.FromDomain(res)))
 }
