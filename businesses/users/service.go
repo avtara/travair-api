@@ -28,10 +28,10 @@ func NewUserService(rep Repository, timeout time.Duration, queueRep queue.Reposi
 }
 
 func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*Domain, error) {
-	_, cancel := context.WithTimeout(ctx, us.contextTimeout)
+	ctx, cancel := context.WithTimeout(ctx, us.contextTimeout)
 	defer cancel()
 
-	existedUser, err := us.userRepository.GetByEmail(ctx, userDomain)
+	existedUser, err := us.userRepository.GetByEmail(ctx, userDomain.Email)
 	if err != nil {
 		if !strings.Contains(err.Error(), "not found") {
 			return nil, err
@@ -51,8 +51,7 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 		return nil, businesses.ErrInternalServer
 	}
 
-	token:= helpers.RandomToken(15)
-
+	token:= helpers.RandomToken(25)
 	keyRedis := fmt.Sprintf("confirm_email:%s",res.Email)
 	_, err = us.cacheRepo.Set(ctx, keyRedis, token, time.Duration(60 * 5))
 	if err != nil {

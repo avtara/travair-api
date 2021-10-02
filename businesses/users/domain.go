@@ -24,5 +24,5 @@ type Service interface {
 
 type Repository interface {
 	StoreNewUsers(ctx context.Context, data *Domain) (*Domain, error)
-	GetByEmail(ctx context.Context, data *Domain) (*Domain, error)
+	GetByEmail(ctx context.Context, email string) (*Domain, error)
 }
