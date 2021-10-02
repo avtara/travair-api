@@ -11,7 +11,6 @@ type Users struct {
 	Name      string    `json:"name"`
 	Email     string    `json:"username"`
 	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func FromDomain(domain *users.Domain) *Users {
@@ -20,6 +19,5 @@ func FromDomain(domain *users.Domain) *Users {
 		Name:      domain.Name,
 		Email:     domain.Email,
 		CreatedAt: domain.CreatedAt,
-		UpdatedAt: domain.UpdatedAt,
 	}
 }
