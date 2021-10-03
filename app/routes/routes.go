@@ -12,4 +12,5 @@ type ControllerList struct {
 func (cl *ControllerList) RouteRegister(e *echo.Echo) {
 	users := e.Group("users")
 	users.POST("/", cl.UserController.Registration)
+	users.POST("/activation/:id", cl.UserController.Activation)
 }

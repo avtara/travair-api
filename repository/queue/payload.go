@@ -1,4 +1,4 @@
-package users
+package queue
 
 import "github.com/google/uuid"
 

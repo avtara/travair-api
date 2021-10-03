@@ -20,9 +20,12 @@ type Domain struct {
 
 type Service interface {
 	Registration(ctx context.Context, data *Domain) (*Domain, error)
+	Activation(ctx context.Context, userID string) (*Domain, error)
 }
 
 type Repository interface {
 	StoreNewUsers(ctx context.Context, data *Domain) (*Domain, error)
 	GetByEmail(ctx context.Context, email string) (*Domain, error)
+	GetByUserID(ctx context.Context, userID uuid.UUID) (*Domain, error)
+	UpdateStatus(ctx context.Context, userID uuid.UUID) error
 }

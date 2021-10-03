@@ -1,4 +1,4 @@
-package users
+package queue
 
 import (
 	"encoding/json"
