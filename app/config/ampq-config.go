@@ -1,11 +1,18 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
 	"github.com/streadway/amqp"
+	"os"
 )
 
 func SetupAMPQConnection()  *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	errEnv := godotenv.Load()
+	if errEnv != nil {
+		panic("Failed to load env file")
+	}
+	uri := os.Getenv("AMQP_URI")
+	conn, err := amqp.Dial(uri)
 	if err != nil {
 		panic("Failed Initializing Broker Connection")
 	}

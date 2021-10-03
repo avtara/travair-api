@@ -1,5 +1,7 @@
 package queue
 
+import "github.com/google/uuid"
+
 type Repository interface {
-	Publish(name string, data interface{}) error
+	EmailUsers(userID uuid.UUID, name, email, payloadType string) error
 }

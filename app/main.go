@@ -8,9 +8,10 @@ import (
 	_usersController "github.com/avtara/travair-api/controllers/users"
 	"github.com/avtara/travair-api/helpers"
 	"github.com/avtara/travair-api/repository/cache"
+	_queueRepo "github.com/avtara/travair-api/repository/queue/users"
+
 	//"github.com/avtara/travair-api/repository/databases/cache"
 	_usersRepo "github.com/avtara/travair-api/repository/databases/users"
-	"github.com/avtara/travair-api/repository/queue"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -34,7 +35,7 @@ func main() {
 	e.Use(middleware.CORS())
 	e.Use(middleware.LoggerWithConfig(_middleware.LoggerConfig()))
 
-	queueRepo := queue.NewRepoAMPQ(ampq)
+	queueRepo := _queueRepo.NewRepoAMPQ(ampq)
 
 	cacheRepo := cache.NewRepoCache(rdb)
 

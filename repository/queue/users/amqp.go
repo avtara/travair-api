@@ -1,8 +1,10 @@
-package queue
+package users
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/avtara/travair-api/businesses/queue"
+	"github.com/google/uuid"
 	"github.com/streadway/amqp"
 )
 
@@ -16,29 +18,30 @@ func NewRepoAMPQ(pubAmpq *amqp.Channel) queue.Repository {
 	}
 }
 
-func (rq *repoQueue) Publish(name string,raw interface{}) error {
-	data, err := json.Marshal(raw)
+func (rq *repoQueue) EmailUsers(userID uuid.UUID, name, email, payloadType string) error {
+	data := FromDomainUsers(userID , name, email, payloadType)
+	dataJSON, err := json.Marshal(&data)
 	if err != nil {
 		return err
 	}
 
 	_, err = rq.publishQueue.QueueDeclare(
-		name,
+		"travair:email",
 		false,
 		false,
 		false,
 		false,
 		nil,
 	)
-
+	fmt.Println(err)
 	err = rq.publishQueue.Publish(
 		"",
-		name,
+		"travair:email",
 		false,
 		false,
 		amqp.Publishing{
 			ContentType: "application/json",
-			Body:        data,
+			Body:        dataJSON,
 		},
 	)
 	if err != nil {

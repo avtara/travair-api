@@ -57,8 +57,9 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 	if err != nil {
 		return nil, businesses.ErrInternalServer
 	}
-	err = us.queueRepo.Publish("email:registration", res)
+	err = us.queueRepo.EmailUsers( res.UserID, res.Name, res.Email, "registration")
 	if err != nil {
+		fmt.Println(err)
 		return nil, businesses.ErrInternalServer
 	}
 	return res, nil
