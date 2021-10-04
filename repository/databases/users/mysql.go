@@ -55,3 +55,12 @@ func (ru *repoUsers) GetByUserID(ctx context.Context, userID uuid.UUID) (*users.
 	result := toDomain(&user)
 	return result, nil
 }
+
+func (ru *repoUsers) GetByEmailAndPassword(ctx context.Context, email string) (*users.Domain, error) {
+	var user Users
+	if err := ru.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, err
+	}
+	result := toDomain(&user)
+	return result, nil
+}

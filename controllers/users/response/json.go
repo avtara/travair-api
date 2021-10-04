@@ -9,8 +9,15 @@ import (
 type Users struct {
 	UserID    uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
-	Email     string    `json:"username"`
+	Email     string    `json:"email"`
+	Token     string    `json:"token,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type LoginUsers struct {
+	UserID    uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Token     string    `json:"token,omitempty"`
 }
 
 func FromDomain(domain *users.Domain) *Users {
@@ -19,5 +26,13 @@ func FromDomain(domain *users.Domain) *Users {
 		Name:      domain.Name,
 		Email:     domain.Email,
 		CreatedAt: domain.CreatedAt,
+	}
+}
+
+func LoginFromDomain(domain *users.Domain) *LoginUsers {
+	return &LoginUsers{
+		UserID: domain.UserID,
+		Name:   domain.Name,
+		Token:  "asikasik",
 	}
 }

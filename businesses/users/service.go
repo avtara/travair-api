@@ -2,7 +2,6 @@ package users
 
 import (
 	"context"
-	"fmt"
 	"github.com/avtara/travair-api/businesses"
 	"github.com/avtara/travair-api/businesses/queue"
 	"github.com/avtara/travair-api/helpers"
@@ -14,14 +13,14 @@ import (
 type userService struct {
 	userRepository Repository
 	contextTimeout time.Duration
-	queueRepo queue.Repository
+	queueRepo      queue.Repository
 }
 
 func NewUserService(rep Repository, timeout time.Duration, queueRep queue.Repository) Service {
 	return &userService{
 		userRepository: rep,
 		contextTimeout: timeout,
-		queueRepo: queueRep,
+		queueRepo:      queueRep,
 	}
 }
 
@@ -49,9 +48,8 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 		return nil, businesses.ErrInternalServer
 	}
 
-	err = us.queueRepo.EmailUsers( res.UserID, res.Name, res.Email, "registration")
+	err = us.queueRepo.EmailUsers(res.UserID, res.Name, res.Email, "registration")
 	if err != nil {
-		fmt.Println(err)
 		return nil, businesses.ErrInternalServer
 	}
 	return res, nil
@@ -69,7 +67,7 @@ func (us *userService) Activation(ctx context.Context, userID string) (*Domain, 
 	if err != nil {
 		if !strings.Contains(err.Error(), "not found") {
 			return nil, err
-		}else {
+		} else {
 			return nil, businesses.ErrAccountNotFound
 		}
 	}
@@ -80,6 +78,34 @@ func (us *userService) Activation(ctx context.Context, userID string) (*Domain, 
 
 	if err = us.userRepository.UpdateStatus(ctx, uuidUserID); err != nil {
 		return nil, businesses.ErrInternalServer
+	}
+
+	return res, nil
+}
+
+func (us *userService) Login(ctx context.Context, email, password string) (*Domain, error) {
+	ctx, cancel := context.WithTimeout(ctx, us.contextTimeout)
+	defer cancel()
+
+	password, err := helpers.HashPassword(password)
+	if err != nil {
+		return nil, businesses.ErrInternalServer
+	}
+
+	res, err := us.userRepository.GetByEmailAndPassword(ctx, email)
+	if err != nil {
+		if !strings.Contains(err.Error(), "not found") {
+			return nil, err
+		}
+		return nil, businesses.ErrAccountNotFound
+	}
+
+	if helpers.ValidateHash(password, res.Password) {
+		return nil, businesses.ErrInvalidCredential
+	}
+
+	if res.Status != 1 {
+		return nil, businesses.ErrAccountUnactivated
 	}
 
 	return res, nil

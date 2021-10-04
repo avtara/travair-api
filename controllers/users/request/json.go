@@ -9,7 +9,12 @@ type UserRegistration struct {
 	Role      string `json:"role" validate:"required,role"`
 }
 
-func (rec *UserRegistration) ToDomain() *users.Domain{
+type Login struct {
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
+}
+
+func (rec *UserRegistration) UserRegistrationToDomain() *users.Domain{
 	return &users.Domain{
 		Name      :rec.Name,
 		Email     :rec.Email,

@@ -37,7 +37,7 @@ func (ctrl *UserController) Registration(c echo.Context) error {
 				err, helpers.EmptyObj{}))
 	}
 
-	res, err := ctrl.userService.Registration(ctx, req.ToDomain())
+	res, err := ctrl.userService.Registration(ctx, req.UserRegistrationToDomain())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError,
 			helpers.BuildErrorResponse("Internal Server Error",
@@ -67,7 +67,42 @@ func (ctrl *UserController) Activation(c echo.Context) error {
 				err, helpers.EmptyObj{}))
 	}
 
-	return c.JSON(http.StatusCreated,
-		helpers.BuildResponse("Successfully created an account, please check your email to activate!",
+	return c.JSON(http.StatusOK,
+		helpers.BuildResponse("Successfully activation an account!",
 			response.FromDomain(res)))
+}
+
+func (ctrl *UserController) Login(c echo.Context) error {
+	ctx := c.Request().Context()
+	req := new(request.Login)
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusInternalServerError,
+			helpers.BuildErrorResponse("Internal Server Error",
+				err, helpers.EmptyObj{}))
+	}
+	if err := c.Validate(req); err != nil {
+		return c.JSON(http.StatusBadRequest,
+			helpers.BuildErrorResponse("An error occurred while validating the request data",
+				err, helpers.EmptyObj{}))
+	}
+
+	res, err := ctrl.userService.Login(ctx, req.Email, req.Password)
+	if err != nil {
+		if strings.Contains(err.Error(), "not match") {
+			return c.JSON(http.StatusUnauthorized,
+				helpers.BuildErrorResponse("Wrong credentials",
+					err, helpers.EmptyObj{}))
+		} else if strings.Contains(err.Error(), "not been activated") {
+			return c.JSON(http.StatusForbidden,
+				helpers.BuildErrorResponse("Account Unactivated!",
+					err, helpers.EmptyObj{}))
+		}
+		return c.JSON(http.StatusInternalServerError,
+			helpers.BuildErrorResponse("Internal Server Error",
+				err, helpers.EmptyObj{}))
+	}
+
+	return c.JSON(http.StatusOK,
+		helpers.BuildResponse("Successfully login an account!",
+			response.LoginFromDomain(res)))
 }
