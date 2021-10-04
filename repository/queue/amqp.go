@@ -6,6 +6,7 @@ import (
 	"github.com/avtara/travair-api/businesses/queue"
 	"github.com/google/uuid"
 	"github.com/streadway/amqp"
+	"log"
 )
 
 type repoQueue struct {
@@ -18,11 +19,11 @@ func NewRepoAMPQ(pubAmpq *amqp.Channel) queue.Repository {
 	}
 }
 
-func (rq *repoQueue) EmailUsers(userID uuid.UUID, name, email, payloadType string) error {
+func (rq *repoQueue) EmailUsers(userID uuid.UUID, name, email, payloadType string) {
 	data := FromDomainUsers(userID , name, email, payloadType)
 	dataJSON, err := json.Marshal(&data)
 	if err != nil {
-		return err
+		log.Fatal(err.Error())
 	}
 
 	_, err = rq.publishQueue.QueueDeclare(

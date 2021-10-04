@@ -48,10 +48,8 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 		return nil, businesses.ErrInternalServer
 	}
 
-	err = us.queueRepo.EmailUsers(res.UserID, res.Name, res.Email, "registration")
-	if err != nil {
-		return nil, businesses.ErrInternalServer
-	}
+	us.queueRepo.EmailUsers(res.UserID, res.Name, res.Email, "registration")
+
 	return res, nil
 }
 
