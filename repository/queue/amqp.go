@@ -2,7 +2,6 @@ package queue
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/avtara/travair-api/businesses/queue"
 	"github.com/google/uuid"
 	"github.com/streadway/amqp"
@@ -34,7 +33,6 @@ func (rq *repoQueue) EmailUsers(userID uuid.UUID, name, email, payloadType strin
 		false,
 		nil,
 	)
-	fmt.Println(err)
 	err = rq.publishQueue.Publish(
 		"",
 		"travair:email",
@@ -46,8 +44,6 @@ func (rq *repoQueue) EmailUsers(userID uuid.UUID, name, email, payloadType strin
 		},
 	)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-
-	return nil
 }
