@@ -34,6 +34,7 @@ func (us *userService) Registration(ctx context.Context, userDomain *Domain) (*D
 			return nil, err
 		}
 	}
+
 	if existedUser != nil {
 		return nil, businesses.ErrEmailDuplicate
 	}
