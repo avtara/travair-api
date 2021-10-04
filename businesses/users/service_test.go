@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/avtara/travair-api/businesses"
-	_cacheMock "github.com/avtara/travair-api/businesses/cache/mocks"
 	_queueMock "github.com/avtara/travair-api/businesses/queue/mocks"
 	"github.com/avtara/travair-api/businesses/users"
 	_usersMock "github.com/avtara/travair-api/businesses/users/mocks"
@@ -17,7 +16,6 @@ import (
 
 var (
 	mockUsersRepository _usersMock.Repository
-	mockCacheRepository _cacheMock.Repository
 	mockQueueRepository _queueMock.Repository
 	userService         users.Service
 
