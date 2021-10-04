@@ -14,6 +14,7 @@ type Domain struct {
 	Photo     string
 	Role      string
 	Status    int
+	Token     string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

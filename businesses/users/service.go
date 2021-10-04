@@ -2,6 +2,7 @@ package users
 
 import (
 	"context"
+	"github.com/avtara/travair-api/app/middleware"
 	"github.com/avtara/travair-api/businesses"
 	"github.com/avtara/travair-api/businesses/queue"
 	"github.com/avtara/travair-api/helpers"
@@ -14,13 +15,15 @@ type userService struct {
 	userRepository Repository
 	contextTimeout time.Duration
 	queueRepo      queue.Repository
+	jwtAuth        *middleware.ConfigJWT
 }
 
-func NewUserService(rep Repository, timeout time.Duration, queueRep queue.Repository) Service {
+func NewUserService(rep Repository, timeout time.Duration, queueRep queue.Repository, jwt *middleware.ConfigJWT) Service {
 	return &userService{
 		userRepository: rep,
 		contextTimeout: timeout,
 		queueRepo:      queueRep,
+		jwtAuth:        jwt,
 	}
 }
 
@@ -106,6 +109,6 @@ func (us *userService) Login(ctx context.Context, email, password string) (*Doma
 	if res.Status != 1 {
 		return nil, businesses.ErrAccountUnactivated
 	}
-
+	res.Token = us.jwtAuth.GenerateToken(res.UserID, res.Role)
 	return res, nil
 }

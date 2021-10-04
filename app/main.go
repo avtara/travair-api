@@ -23,8 +23,14 @@ func main() {
 		db   = config.SetupDatabaseConnection()
 		ampq = config.SetupAMPQConnection()
 	)
+	timeJWT, _ := strconv.Atoi(os.Getenv("JWT_TOKEN_AGE"))
+	secretToken := os.Getenv("SECRET_TOKEN_KEY")
 	timeoutDur, _ := strconv.Atoi(os.Getenv("TIMEOUT_IN_MS"))
 	timeoutContext := time.Duration(timeoutDur) * time.Millisecond
+	configJWT := _middleware.ConfigJWT{
+		SecretJWT:       secretToken,
+		ExpiresDuration: timeJWT,
+	}
 
 	e := echo.New()
 	e.Validator = &helpers.CustomValidator{Validator: validator.New()}
@@ -34,10 +40,11 @@ func main() {
 	queueRepo := _queueRepo.NewRepoAMPQ(ampq)
 
 	userRepo := _usersRepo.NewRepoMySQL(db)
-	userService := _usersService.NewUserService(userRepo, timeoutContext, queueRepo)
+	userService := _usersService.NewUserService(userRepo, timeoutContext, queueRepo, &configJWT)
 	userCtrl := _usersController.NewUserController(userService, ampq)
 
 	routesInit := routes.ControllerList{
+		JWTMiddleware:  configJWT.Init(),
 		UserController: *userCtrl,
 	}
 	routesInit.RouteRegister(e)

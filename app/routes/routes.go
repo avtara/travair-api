@@ -3,10 +3,12 @@ package routes
 import (
 	"github.com/avtara/travair-api/controllers/users"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 type ControllerList struct {
 	UserController users.UserController
+	JWTMiddleware  middleware.JWTConfig
 }
 
 func (cl *ControllerList) RouteRegister(e *echo.Echo) {
