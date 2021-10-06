@@ -23,7 +23,7 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	userService = users.NewUserService(&mockUsersRepository, time.Second*1, &mockQueueRepository)
+	userService = users.NewUserService(&mockUsersRepository, time.Second*1, &mockQueueRepository, &mockJWTRepos)
 	domainTest = users.Domain{
 		Email:    "avtara@gmail.com",
 		Role:     "tenant",
@@ -35,9 +35,12 @@ func TestMain(m *testing.M) {
 
 func TestUserService_Registration(t *testing.T) {
 	t.Run("Valid payload", func(t *testing.T) {
-		mockUsersRepository.On("GetByEmail", mock.Anything, mock.Anything).Return(nil, nil).Once()
-		mockUsersRepository.On("StoreNewUsers", mock.Anything, mock.Anything).Return(&domainTest, nil).Once()
-		mockQueueRepository.On("EmailUsers", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("string")).Once()
+		mockUsersRepository.On("GetByEmail", mock.Anything,
+			mock.Anything).Return(nil, nil).Once()
+		mockUsersRepository.On("StoreNewUsers", mock.Anything,
+			mock.Anything).Return(&domainTest, nil).Once()
+		mockQueueRepository.On("EmailUsers", mock.Anything, mock.AnythingOfType("string"),
+			mock.AnythingOfType("string"), mock.AnythingOfType("string")).Once()
 
 		req := &users.Domain{
 			Email:    "avtara@gmail.com",

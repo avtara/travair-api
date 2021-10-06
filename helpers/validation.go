@@ -51,6 +51,14 @@ func (cv *CustomValidator) Init() {
 	if err != nil {
 		return
 	}
+	err = cv.Validator.RegisterValidation("unit_category", func(fl validator.FieldLevel) bool {
+		unitCategory := fl.Field().String()
+
+		return unitCategory == "apartment" || unitCategory == "hotel" || unitCategory == "house"
+	})
+	if err != nil {
+		return
+	}
 }
 
 

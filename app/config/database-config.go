@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	_unitsRepo "github.com/avtara/travair-api/repository/databases/units"
 	_usersRepo "github.com/avtara/travair-api/repository/databases/users"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -38,5 +39,7 @@ func SetupDatabaseConnection() *gorm.DB {
 }
 
 func dbMigrate(db *gorm.DB) {
-	db.AutoMigrate(&_usersRepo.Users{})
+
+	db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";")
+	db.AutoMigrate(&_usersRepo.Users{}, &_unitsRepo.Units{}, &_unitsRepo.Photos{})
 }
