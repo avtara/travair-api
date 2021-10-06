@@ -8,7 +8,7 @@ import (
 
 type Users struct {
 	gorm.Model
-	ID       uint64    `gorm:"primary_key:auto_increment"`
+	ID       uint    `gorm:"primary_key:auto_increment"`
 	UserID   uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4()"`
 	Name     string    `gorm:"type:varchar(255)"`
 	Email    string    `gorm:"uniqueIndex;type:varchar(255)"`
@@ -20,6 +20,7 @@ type Users struct {
 
 func toDomain(rec *Users) *users.Domain {
 	return &users.Domain{
+		ID: rec.ID,
 		UserID:    rec.UserID,
 		Name:      rec.Name,
 		Email:     rec.Email,

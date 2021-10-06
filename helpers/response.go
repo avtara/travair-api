@@ -41,6 +41,8 @@ func BuildErrorResponse(message string, err error, data interface{}) Response {
 				errorMessage = fmt.Sprintf("%s is not strong enough", err.Field())
 			case "role":
 				errorMessage = fmt.Sprintf("%s is not valid role", err.Field())
+			case "unit_category":
+				errorMessage = fmt.Sprintf("%s is not valid category", err.Field())
 			}
 			break
 		}

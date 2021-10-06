@@ -7,6 +7,7 @@ import (
 )
 
 type Domain struct {
+	ID        uint
 	UserID    uuid.UUID
 	Name      string
 	Email     string
@@ -23,6 +24,7 @@ type Service interface {
 	Registration(ctx context.Context, data *Domain) (*Domain, error)
 	Activation(ctx context.Context, userID string) (*Domain, error)
 	Login(ctx context.Context, email, password string) (*Domain, error)
+	GetID(ctx context.Context, userID uuid.UUID) (uint, error)
 }
 
 type Repository interface {

@@ -112,3 +112,12 @@ func (us *userService) Login(ctx context.Context, email, password string) (*Doma
 	res.Token = us.jwtAuth.GenerateToken(res.UserID, res.Role)
 	return res, nil
 }
+
+func (us *userService) GetID(ctx context.Context, userID uuid.UUID) (uint, error) {
+	ctx, cancel := context.WithTimeout(ctx, us.contextTimeout)
+	defer cancel()
+
+	res, _ := us.userRepository.GetByUserID(ctx, userID)
+
+	return res.ID, nil
+}

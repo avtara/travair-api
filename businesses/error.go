@@ -9,4 +9,5 @@ var (
 	ErrAccountNotFound = errors.New("account not found")
 	ErrAccountUnactivated = errors.New("account has not been activated")
 	ErrInvalidCredential = errors.New("email or password does not match")
+	ErrUnitNotFound = errors.New("unit not found")
 )
