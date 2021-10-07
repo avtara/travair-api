@@ -2,6 +2,7 @@ package routes
 
 import (
 	_middleware "github.com/avtara/travair-api/app/middleware"
+	"github.com/avtara/travair-api/controllers/reservations"
 	"github.com/avtara/travair-api/controllers/units"
 	"github.com/avtara/travair-api/controllers/users"
 	"github.com/labstack/echo/v4"
@@ -12,6 +13,7 @@ type ControllerList struct {
 	UserController users.UserController
 	JWTMiddleware  middleware.JWTConfig
 	UnitController units.UnitController
+	ReservationController reservations.ReservationController
 }
 
 func (cl *ControllerList) RouteRegister(e *echo.Echo) {
@@ -27,4 +29,8 @@ func (cl *ControllerList) RouteRegister(e *echo.Echo) {
 	unit.PUT("/:id", cl.UnitController.UpdateThumbnail, middleware.JWTWithConfig(cl.JWTMiddleware), _middleware.RoleValidation("tenant"))
 	unit.POST("/:id/photos", cl.UnitController.AddPhotos, middleware.JWTWithConfig(cl.JWTMiddleware), _middleware.RoleValidation("tenant"))
 	unit.GET("/:id", cl.UnitController.GetDetail)
+	unit.GET("", cl.UnitController.GetUnits)
+
+	resv := e.Group("reservations")
+	resv.POST("", cl.ReservationController.Reservation, middleware.JWTWithConfig(cl.JWTMiddleware), _middleware.RoleValidation("guest"))
 }

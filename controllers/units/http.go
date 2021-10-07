@@ -11,12 +11,12 @@ import (
 )
 
 type UnitController struct {
-	unitService  units.Service
+	unitService units.Service
 }
 
 func NewUnitController(uc units.Service) *UnitController {
 	return &UnitController{
-		unitService:  uc,
+		unitService: uc,
 	}
 }
 
@@ -57,14 +57,13 @@ func (ctrl *UnitController) UpdateThumbnail(c echo.Context) error {
 				err, helpers.EmptyObj{}))
 	}
 
-
 	if err = ctrl.unitService.ChangeThumbnail(ctx, unitID, file); err != nil {
 		return c.JSON(http.StatusInternalServerError,
 			helpers.BuildErrorResponse("Internal Server Error",
 				err, helpers.EmptyObj{}))
 	}
 
-	return c.JSON(http.StatusCreated,
+	return c.JSON(http.StatusOK,
 		helpers.BuildResponse("Success update thumbnail!",
 			map[string]string{"unit_id": unitID}))
 }
@@ -104,4 +103,22 @@ func (ctrl *UnitController) GetDetail(c echo.Context) error {
 	return c.JSON(http.StatusOK,
 		helpers.BuildResponse("Success get detail unit!",
 			response.DetailFromDomain(res)))
+}
+
+func (ctrl *UnitController) GetUnits(c echo.Context) error {
+	ctx := c.Request().Context()
+	ip := c.QueryParam("ip")
+	long := c.QueryParam("long")
+	lat := c.QueryParam("lat")
+
+	res, err := ctrl.unitService.UnitsByGeo(ctx, ip, long, lat)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError,
+			helpers.BuildErrorResponse("Internal Server Error",
+				err, helpers.EmptyObj{}))
+	}
+
+	return c.JSON(http.StatusOK,
+		helpers.BuildResponse("Success get detail unit!",
+			res))
 }

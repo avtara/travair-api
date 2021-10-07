@@ -2,6 +2,7 @@ package units
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"github.com/avtara/travair-api/businesses/units"
 	"github.com/google/uuid"
@@ -59,7 +60,7 @@ func (ur *repoUnit) SelectAllPhotosByID(ctx context.Context, ID uint) ([]units.P
 	return photosToDomain(photos), nil
 }
 
-func (ur *repoUnit) GetByUnitID(ctx context.Context, unitID uuid.UUID) (*units.Domain,error) {
+func (ur *repoUnit) GetByUnitID(ctx context.Context, unitID uuid.UUID) (*units.Domain, error) {
 	var res Units
 	if err := ur.DB.Preload("Users").Find(&res).Where("unit_id = ?", unitID).Error; err != nil {
 		fmt.Println(err)
@@ -77,4 +78,26 @@ func (ur *repoUnit) SelectAddressByID(ctx context.Context, ID uint) (units.Addre
 	}
 
 	return addressToDomain(address), nil
+}
+func (ur *repoUnit) GetUnitsByGeo(ctx context.Context, lat, long float64) ([]units.Result, error) {
+	qe := `SELECT *,
+       (
+           (
+                   6371.04 * ACOS(((COS(((PI() / 2) - RADIANS((90 - addresses.latitude)))) *
+                                    COS(PI() / 2 - RADIANS(90 - -7.424500)) *
+                                    COS((RADIANS(addresses.longitude) - RADIANS(109.230200))))
+                   + (SIN(((PI() / 2) - RADIANS((90 - addresses.latitude)))) *
+                      SIN(((PI() / 2) - RADIANS(90 - -7.424500))))))
+               )
+           ) as distance
+ FROM "units" inner join addresses on units.id = addresses.id`
+
+
+	var res []Result
+	err := ur.DB.Raw(qe, sql.Named("lat", lat), sql.Named("long", long)).Find(&res).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return resultsToDomain(res), nil
 }
