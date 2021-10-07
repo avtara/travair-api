@@ -3,10 +3,12 @@ package units
 import (
 	"context"
 	"github.com/avtara/travair-api/businesses"
+	"github.com/avtara/travair-api/businesses/iplocator"
 	"github.com/avtara/travair-api/businesses/uploads"
 	"github.com/avtara/travair-api/businesses/users"
 	"github.com/google/uuid"
 	"mime/multipart"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -16,14 +18,16 @@ type unitService struct {
 	userService    users.Service
 	contextTimeout time.Duration
 	uploadRepo     uploads.Repository
+	ipapiRepo      iplocator.Repository
 }
 
-func NewUnitService(rep Repository, us users.Service, to time.Duration, ur uploads.Repository) Service {
+func NewUnitService(rep Repository, us users.Service, to time.Duration, ur uploads.Repository, ir iplocator.Repository) Service {
 	return &unitService{
 		unitRepository: rep,
 		userService:    us,
 		contextTimeout: to,
-		uploadRepo: ur,
+		uploadRepo:     ur,
+		ipapiRepo:      ir,
 	}
 }
 
@@ -42,7 +46,7 @@ func (us *unitService) Add(ctx context.Context, data *Domain, userID uuid.UUID) 
 	return res, nil
 }
 
-func (us *unitService) ChangeThumbnail(ctx context.Context, unitID string,file *multipart.FileHeader) error {
+func (us *unitService) ChangeThumbnail(ctx context.Context, unitID string, file *multipart.FileHeader) error {
 	ctx, cancel := context.WithTimeout(ctx, us.contextTimeout)
 	defer cancel()
 
@@ -122,9 +126,48 @@ func (us *unitService) Detail(ctx context.Context, unitID string) (*Domain, erro
 	if err != nil {
 		return nil, businesses.ErrInternalServer
 	}
-	res.Photos, err = us.unitRepository.SelectAllPhotosByID(ctx,id)
+	res.Photos, err = us.unitRepository.SelectAllPhotosByID(ctx, id)
 	if err != nil {
 		return nil, businesses.ErrInternalServer
+	}
+
+	return res, nil
+}
+
+func (us *unitService) GetID(ctx context.Context, userID uuid.UUID) (uint, error) {
+	ctx, cancel := context.WithTimeout(ctx, us.contextTimeout)
+	defer cancel()
+
+	res, _ := us.unitRepository.GetIDByUnitID(ctx, userID)
+	return res, nil
+}
+
+func (us *unitService) UnitsByGeo(ctx context.Context, ip string, long, lat string) ([]Result, error) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	var res []Result
+	var err error
+	if long != "" && lat != "" {
+		longFloat, _ := strconv.ParseFloat(lat, 64)
+		latFloat, _ := strconv.ParseFloat(long, 64)
+		res, err = us.unitRepository.GetUnitsByGeo(ctx, latFloat, longFloat)
+		if err != nil {
+			return nil, businesses.ErrInternalServer
+		}
+	} else if ip != "" {
+		loc, err := us.ipapiRepo.GetLocationByIP(ctx, ip)
+		if err != nil {
+			return nil, businesses.ErrInternalServer
+		}
+		res, err = us.unitRepository.GetUnitsByGeo(ctx, loc.Latitude, loc.Longitude)
+		if err != nil {
+			return nil, businesses.ErrInternalServer
+		}
+	}
+
+	if res == nil {
+		return nil, businesses.ErrUnitNotFound
 	}
 
 	return res, nil

@@ -21,6 +21,7 @@ func FromDomain(domain *units.Domain) *AddUnit {
 }
 
 type Detail struct {
+	UnitID       uuid.UUID     `json:"unit_id"`
 	OwnerName    string        `json:"owner_name"`
 	OwnerPicture string        `json:"owner_picture"`
 	Name         string        `json:"name"`
@@ -47,17 +48,20 @@ type Photo struct {
 	Path string `json:"path"`
 }
 
+
+
 func DetailFromDomain(domain *units.Domain) *Detail {
 	return &Detail{
-		OwnerName: domain.Owner.Name,
+		UnitID:       domain.UnitID,
+		OwnerName:    domain.Owner.Name,
 		OwnerPicture: domain.Owner.Photo,
-		Name: domain.Name,
-		Category: domain.Category,
-		Price: domain.Price,
-		Address: domain.Address,
-		Description: domain.Description,
-		Policy: domain.Policy,
-		Thumbnail: domain.Thumbnail,
-		Photos: domain.Photos,
+		Name:         domain.Name,
+		Category:     domain.Category,
+		Price:        domain.Price,
+		Address:      domain.Address,
+		Description:  domain.Description,
+		Policy:       domain.Policy,
+		Thumbnail:    domain.Thumbnail,
+		Photos:       domain.Photos,
 	}
 }

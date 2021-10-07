@@ -10,4 +10,5 @@ var (
 	ErrAccountUnactivated = errors.New("account has not been activated")
 	ErrInvalidCredential = errors.New("email or password does not match")
 	ErrUnitNotFound = errors.New("unit not found")
+	ErrUnitReserved = errors.New("unit reserved, cant reserve")
 )

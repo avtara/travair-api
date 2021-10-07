@@ -39,6 +39,42 @@ type Photos struct {
 	Path   string `gorm:"type:varchar(255)"`
 }
 
+type Result struct {
+	Distance   float64
+	Latitude   float64
+	Longitude  float64
+	Name       string
+	Street     string
+	City       string
+	State      string
+	Country    string
+	PostalCode string
+}
+
+func resultToDomain(data Result) units.Result {
+	return units.Result{
+		Name:       data.Name,
+		Latitude:   data.Latitude,
+		Longitude:  data.Longitude,
+		Distance:   data.Distance,
+		Street:     data.Street,
+		City:       data.City,
+		State:      data.State,
+		Country:    data.Country,
+		PostalCode: data.PostalCode,
+	}
+}
+
+func resultsToDomain(data []Result) []units.Result {
+	var res []units.Result
+	for _, s := range data {
+		if s.Distance < 20 {
+			res = append(res, resultToDomain(s))
+		}
+	}
+	return res
+}
+
 func addUnitToDomain(data Units) *units.Domain {
 	return &units.Domain{
 		UnitID:      data.UnitID,
@@ -95,6 +131,7 @@ func photosToDomain(data []Photos) []units.Photo {
 
 func detailToDomain(data Units) *units.Domain {
 	return &units.Domain{
+		UnitID:      data.UnitID,
 		Name:        data.Name,
 		Category:    data.Category,
 		Price:       data.Price,
@@ -108,12 +145,12 @@ func detailToDomain(data Units) *units.Domain {
 
 func addressToDomain(data Address) units.Address {
 	return units.Address{
-		Street     :data.Street,
-		City       :data.City,
-		State      :data.State,
-		Country    :data.Country,
-		PostalCode :data.PostalCode,
-		Latitude   :data.Latitude,
-		Longitude  :data.Longitude,
+		Street:     data.Street,
+		City:       data.City,
+		State:      data.State,
+		Country:    data.Country,
+		PostalCode: data.PostalCode,
+		Latitude:   data.Latitude,
+		Longitude:  data.Longitude,
 	}
 }
