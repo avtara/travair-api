@@ -2,6 +2,7 @@ package users_test
 
 import (
 	"errors"
+	"fmt"
 	"github.com/avtara/travair-api/app/middleware"
 	_user "github.com/avtara/travair-api/businesses/users"
 	"github.com/avtara/travair-api/businesses/users/mocks"
@@ -101,7 +102,7 @@ func TestUserController_Registration(t *testing.T) {
 		e.Validator = &helpers.CustomValidator{Validator: validator.New()}
 		c := e.NewContext(req, rec)
 
-		mockUsersService.On("Registration", mock.Anything, mock.Anything).Return(&_user.Domain{}, errors.New(""))
+		mockUsersService.On("Registration", mock.Anything, mock.Anything).Return(&_user.Domain{}, errors.New("")).Once()
 
 		if assert.NoError(t, usersCtrl.Registration(c)) {
 			assert.Equal(t, http.StatusInternalServerError, rec.Code)
@@ -116,10 +117,11 @@ func TestUserController_Registration(t *testing.T) {
 		e.Validator = &helpers.CustomValidator{Validator: validator.New()}
 		c := e.NewContext(req, rec)
 
-		mockUsersService.On("Registration", mock.Anything, mock.Anything).Return(&_user.Domain{}, nil)
+		mockUsersService.On("Registration", mock.Anything, mock.Anything).Return(&_user.Domain{}, nil).Once()
 
 		if assert.NoError(t, usersCtrl.Registration(c)) {
 			assert.Equal(t, http.StatusCreated, rec.Code)
+			fmt.Println(rec)
 		}
 	})
 }

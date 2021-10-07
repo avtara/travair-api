@@ -1,0 +1,49 @@
+name: on-push-master
+
+on:
+  pull_request:
+    branches:
+      - 'main'
+  push:
+    branches:
+      - 'master'
+      - 'feature-*'
+      - 'hotfix-*'
+      - 'bug-*'
+
+jobs:
+  api-test:
+    name: api test - run unitest on action
+    runs-on: ubuntu-latest
+    container: golang:1.16
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: testing
+          POSTGRES_PASSWORD: githubtesting
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: githubtesting
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      matrix:
+        go: [ '1.16' ]
+    steps:
+      - name: "Git Checkout"
+        uses: actions/checkout@v2
+      - name: running unitest
+        env:
+          DB_USER: githubtesting
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_PASS: githubtesting
+          DB_NAME: testing
+        run: |
+          go mod tidy
+          go test ./... -cover -failfast

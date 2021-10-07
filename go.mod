@@ -4,7 +4,6 @@ go 1.16
 
 require (
 	github.com/go-playground/validator/v10 v10.9.0
-	github.com/go-redis/redis/v8 v8.11.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
@@ -15,5 +14,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
 	golang.org/x/net v0.0.0-20210913180222-943fd674d43e
 	gorm.io/driver/postgres v1.1.2
+	gorm.io/driver/sqlite v1.1.5
 	gorm.io/gorm v1.21.15
 )
