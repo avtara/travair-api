@@ -21,9 +21,9 @@ jobs:
         image: postgres:latest
         env:
           POSTGRES_DB: testing
-          POSTGRES_PASSWORD: githubtesting
+          POSTGRES_PASSWORD: avtara112
           POSTGRES_PORT: 5432
-          POSTGRES_USER: githubtesting
+          POSTGRES_USER: avtara
         ports:
           - 5432:5432
         options: >-
@@ -39,10 +39,10 @@ jobs:
         uses: actions/checkout@v2
       - name: running unitest
         env:
-          DB_USER: githubtesting
-          DB_HOST: localhost
+          DB_USER: avtara
+          DB_HOST: postgres
           DB_PORT: 5432
-          DB_PASS: githubtesting
+          DB_PASS: avtara112
           DB_NAME: testing
         run: |
           go mod tidy
